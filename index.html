@@ -1,10 +1,881 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width, initial-scale=1.0">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chotis en Ávila - Auténtica Cocina Española en San Juan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+
+        body {
+            overflow-x: hidden;
+            background: #FDFBF7;
+        }
+
+        /* Particle Background */
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Thin accent lines */
+        .accent-line {
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, #C4764E, transparent);
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(253, 251, 247, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(196, 118, 78, 0.1);
+        }
+
+        nav.scrolled {
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Hero overlay */
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(52, 44, 40, 0.7) 0%, rgba(196, 118, 78, 0.4) 100%);
+        }
+
+        /* Fade in animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Image hover effects */
+        .img-hover {
+            overflow: hidden;
+            transition: all 0.6s ease;
+        }
+
+        .img-hover img {
+            transition: transform 0.6s ease;
+        }
+
+        .img-hover:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: transparent;
+            border: 1px solid #C4764E;
+            color: #C4764E;
+            padding: 12px 32px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            font-weight: 200;
+        }
+
+        .btn-primary:hover {
+            background: #C4764E;
+            color: white;
+        }
+
+        /* Timeline */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, #C4764E, transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: #C4764E;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Particles animation */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            50% {
+                transform: translateY(-10px) translateX(-10px);
+            }
+            75% {
+                transform: translateY(-15px) translateX(5px);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(196, 118, 78, 0.3), transparent);
+            border-radius: 50%;
+            animation: float infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Gallery grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
+
+    <!-- Particle Background -->
+    <canvas id="particleCanvas" class="particle-bg"></canvas>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-5">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div>
+                    <h1 class="text-2xl md:text-3xl" style="color: #342C28; font-weight: 200; letter-spacing: 4px;">
+                        CHOTIS EN ÁVILA
+                    </h1>
+                    <p class="text-xs" style="color: #C4764E; letter-spacing: 3px; font-weight: 200;">AUTÉNTICA COCINA ESPAÑOLA</p>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-10">
+                    <a href="#historia" class="text-sm uppercase tracking-wider hover:text-[#C4764E] transition-colors" style="font-weight: 200;">Historia</a>
+                    <a href="#chef" class="text-sm uppercase tracking-wider hover:text-[#C4764E] transition-colors" style="font-weight: 200;">Chef</a>
+                    <a href="#menu" class="text-sm uppercase tracking-wider hover:text-[#C4764E] transition-colors" style="font-weight: 200;">Menú</a>
+                    <a href="#galeria" class="text-sm uppercase tracking-wider hover:text-[#C4764E] transition-colors" style="font-weight: 200;">Galería</a>
+                    <a href="#reservas" class="btn-primary">Reservar</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden" style="color: #342C28;">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50">
+            <div class="p-6">
+                <button id="close-menu-btn" class="float-right" style="color: #342C28;">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div class="clear-both mt-16 space-y-8">
+                    <a href="#historia" class="block text-sm uppercase tracking-widest hover:text-[#C4764E]" style="font-weight: 200;">Historia</a>
+                    <a href="#chef" class="block text-sm uppercase tracking-widest hover:text-[#C4764E]" style="font-weight: 200;">Chef</a>
+                    <a href="#menu" class="block text-sm uppercase tracking-widest hover:text-[#C4764E]" style="font-weight: 200;">Menú</a>
+                    <a href="#galeria" class="block text-sm uppercase tracking-widest hover:text-[#C4764E]" style="font-weight: 200;">Galería</a>
+                    <a href="#reservas" class="btn-primary mt-8 inline-block">Reservar</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center">
+        <div class="absolute inset-0 z-0">
+            <img src="./materials/DQRdEsOjvtA.jpg" alt="Cochinillo Asado" class="w-full h-full object-cover">
+            <div class="hero-gradient absolute inset-0"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-6 max-w-5xl mx-auto">
+            <div class="fade-in visible">
+                <h2 class="text-5xl md:text-7xl lg:text-8xl mb-6 text-white" style="font-weight: 100; letter-spacing: 8px;">
+                    CHOTIS EN ÁVILA
+                </h2>
+                <div class="flex justify-center mb-8">
+                    <div class="accent-line"></div>
+                </div>
+                <p class="text-xl md:text-2xl text-white mb-6" style="font-weight: 200; opacity: 0.95;">
+                    Un Pedazo de España en Puerto Rico
+                </p>
+                <p class="text-base md:text-lg text-white mb-12 max-w-2xl mx-auto" style="font-weight: 200; opacity: 0.9;">
+                    Primera certificación "Restaurants From Spain" en Puerto Rico
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="tel:+17879935607" class="btn-primary" style="background: #C4764E; border-color: #C4764E; color: white;">
+                        Llamar para Reservar
+                    </a>
+                    <a href="#menu" class="btn-primary" style="border-color: white; color: white;">
+                        Ver Menú
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10">
+            <div style="animation: float 3s ease-in-out infinite;">
+                <svg class="w-6 h-6 text-white opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Historia Section -->
+    <section id="historia" class="py-32 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-in">
+                    <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                        De Ávila a San Juan
+                    </h2>
+                    <div class="accent-line mb-8"></div>
+                    <p class="text-lg leading-relaxed mb-6" style="color: #5A4D47;">
+                        El <span style="color: #C4764E;">Chotis</span>, un baile tradicional de Madrid, se une a <span style="color: #C4764E;">Ávila</span>,
+                        la ciudad natal del Chef Mario Jiménez, para crear un puente entre dos mundos: la España ancestral y el vibrante Puerto Rico.
+                    </p>
+                    <p class="text-lg leading-relaxed mb-6" style="color: #5A4D47;">
+                        Hace más de ocho años, Mario transformó un antiguo punto de encuentro de la comunidad española en San Juan en un verdadero
+                        <span style="color: #C4764E;">embajada gastronómica</span> de la cocina castellana.
+                    </p>
+                    <p class="text-lg leading-relaxed mb-8" style="color: #5A4D47;">
+                        De electricista a chef, de Ávila a Hato Rey, Mario trae consigo las recetas que aprendió de su madre y la pasión
+                        por los sabores auténticos de su tierra.
+                    </p>
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQWgT0KkxSp.jpg" alt="Paella y Pulpo" class="w-full h-auto rounded shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="py-32 bg-white relative z-10">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-20 fade-in">
+                <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                    Un Puente Entre Dos Mundos
+                </h2>
+                <div class="flex justify-center mb-6">
+                    <div class="accent-line"></div>
+                </div>
+                <p class="text-lg max-w-2xl mx-auto" style="color: #5A4D47;">
+                    La historia de cómo el amor y la pasión construyeron un hogar culinario
+                </p>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="timeline-line hidden md:block"></div>
+
+                <!-- Ávila -->
+                <div class="fade-in mb-20 md:flex items-start relative">
+                    <div class="timeline-dot hidden md:block" style="top: 1.5rem;"></div>
+                    <div class="md:w-1/2 md:pr-12 mb-6 md:mb-0 md:text-right">
+                        <div class="inline-block px-4 py-2 mb-4" style="background: rgba(196, 118, 78, 0.1); border: 1px solid #C4764E;">
+                            <span class="text-sm uppercase tracking-wider" style="color: #C4764E; font-weight: 200;">Ávila, España</span>
+                        </div>
+                        <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Los Orígenes</h3>
+                        <p style="color: #5A4D47;">
+                            En las murallas medievales de Ávila, Mario crece rodeado de los aromas de la cocina de su madre.
+                            Las recetas tradicionales castellanas se convierten en su lenguaje del amor.
+                        </p>
+                    </div>
+                    <div class="hidden md:block md:w-1/2"></div>
+                </div>
+
+                <!-- El Amor -->
+                <div class="fade-in mb-20 md:flex items-start relative">
+                    <div class="timeline-dot hidden md:block" style="top: 1.5rem;"></div>
+                    <div class="hidden md:block md:w-1/2"></div>
+                    <div class="md:w-1/2 md:pl-12">
+                        <div class="inline-block px-4 py-2 mb-4" style="background: rgba(52, 107, 135, 0.1); border: 1px solid #346B87;">
+                            <span class="text-sm uppercase tracking-wider" style="color: #346B87; font-weight: 200;">El Puente</span>
+                        </div>
+                        <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">El Viaje del Amor</h3>
+                        <p style="color: #5A4D47;">
+                            Por amor a Clarisa, su esposa de Hoyos del Espino, Mario cruza el océano hace 18 años.
+                            De electricista a chef, su pasión lo transforma.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- San Juan -->
+                <div class="fade-in mb-20 md:flex items-start relative">
+                    <div class="timeline-dot hidden md:block" style="top: 1.5rem;"></div>
+                    <div class="md:w-1/2 md:pr-12 mb-6 md:mb-0 md:text-right">
+                        <div class="inline-block px-4 py-2 mb-4" style="background: rgba(196, 118, 78, 0.1); border: 1px solid #C4764E;">
+                            <span class="text-sm uppercase tracking-wider" style="color: #C4764E; font-weight: 200;">San Juan, Puerto Rico</span>
+                        </div>
+                        <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">El Chotis Renace</h3>
+                        <p style="color: #5A4D47;">
+                            Hace más de 8 años, Mario toma las riendas de El Chotis y lo transforma en Chotis en Ávila,
+                            honrando sus raíces y creando un hogar para los amantes de la auténtica cocina española.
+                        </p>
+                    </div>
+                    <div class="hidden md:block md:w-1/2"></div>
+                </div>
+
+                <!-- Hoy -->
+                <div class="fade-in md:flex items-start relative">
+                    <div class="timeline-dot hidden md:block" style="top: 1.5rem; background: #346B87;"></div>
+                    <div class="hidden md:block md:w-1/2"></div>
+                    <div class="md:w-1/2 md:pl-12">
+                        <div class="inline-block px-4 py-2 mb-4" style="background: rgba(52, 107, 135, 0.1); border: 1px solid #346B87;">
+                            <span class="text-sm uppercase tracking-wider" style="color: #346B87; font-weight: 200;">Hoy</span>
+                        </div>
+                        <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Certificación Internacional</h3>
+                        <p style="color: #5A4D47;">
+                            En mayo de 2022, Chotis en Ávila se convierte en el primer restaurante en Puerto Rico en recibir
+                            la prestigiosa certificación <span style="color: #C4764E;">"Restaurants From Spain"</span>.
+                            Con 40 empleados, es una familia que celebra España cada día.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chef Section -->
+    <section id="chef" class="py-32 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-in img-hover rounded order-2 md:order-1">
+                    <img src="./materials/profile-logo.jpg" alt="Chef Mario Jiménez Hernández" class="w-full h-auto rounded shadow-2xl">
+                </div>
+                <div class="fade-in order-1 md:order-2">
+                    <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                        Mario Jiménez Hernández
+                    </h2>
+                    <div class="accent-line mb-8"></div>
+                    <p class="text-base uppercase tracking-widest mb-6" style="color: #C4764E; font-weight: 200;">
+                        Chef & Propietario
+                    </p>
+                    <p class="text-lg leading-relaxed mb-6" style="color: #5A4D47;">
+                        De las murallas de Ávila a las costas del Caribe, Mario Jiménez Hernández trae consigo más que recetas:
+                        trae el alma de Castilla, las enseñanzas de su madre, y un amor profundo por su tierra natal.
+                    </p>
+                    <p class="text-lg leading-relaxed mb-6" style="color: #5A4D47;">
+                        Autodidacta en la cocina, formado en la tradición familiar y forjado en la experiencia, Mario es su propio
+                        crítico más exigente. Cada <span style="color: #C4764E;">cochinillo lechal asado</span>, cada
+                        <span style="color: #C4764E;">cocido madrileño</span>, cada plato de
+                        <span style="color: #C4764E;">pulpo a la gallega</span> es un homenaje a sus raíces.
+                    </p>
+                    <p class="text-lg leading-relaxed mb-8" style="color: #5A4D47;">
+                        Su historia es de pasión, transformación y dedicación. De electricista a embajador gastronómico,
+                        Mario ha construido un puente culinario entre dos mundos, y lo ha hecho con autenticidad,
+                        productos españoles de la más alta calidad, y el corazón de un hijo de Ávila.
+                    </p>
+                    <div class="border-l pl-6 italic text-lg" style="border-color: #C4764E; color: #342C28;">
+                        "Cada plato es un pedazo de mi hogar, un recuerdo de mi madre, una celebración de España."
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-32 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 fade-in">
+                <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                    Especialidades de la Casa
+                </h2>
+                <div class="flex justify-center mb-6">
+                    <div class="accent-line"></div>
+                </div>
+                <p class="text-lg max-w-3xl mx-auto" style="color: #5A4D47;">
+                    Cocina española auténtica con productos importados y recetas tradicionales
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <!-- Cochinillo -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQRdEsOjvtA.jpg" alt="Cochinillo Lechal Asado" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Cochinillo Lechal Asado</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        El orgullo de Castilla. Cochinillo asado al horno siguiendo la tradición segoviana,
+                        con piel crujiente y carne tierna que se deshace en el paladar.
+                    </p>
+                </div>
+
+                <!-- Paella -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQWgT0KkxSp.jpg" alt="Paella" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Paellas Valencianas</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        Arroz al punto perfecto con mariscos frescos, azafrán auténtico y el sabor inconfundible
+                        de la costa mediterránea española.
+                    </p>
+                </div>
+
+                <!-- Pulpo -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQoisVZDkuH.jpg" alt="Pulpo a la Gallega" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Pulpo a la Gallega</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        Pulpo tierno sobre patatas gallegas, aceite de oliva virgen extra, pimentón dulce y sal gruesa.
+                        Simpleza que es arte.
+                    </p>
+                </div>
+
+                <!-- Cocido -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQbpdQFlHUY.jpg" alt="Cocido Madrileño" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Cocido Madrileño</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        El guiso tradicional de Madrid con garbanzos, carnes de cerdo, ternera, pollo y verduras.
+                        Comfort food español en su máxima expresión.
+                    </p>
+                </div>
+
+                <!-- Arroz Negro -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQW3tLpk0Me.jpg" alt="Arroz Negro" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Arroz Negro con Calamares</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        Arroz teñido con tinta de calamar, repleto de sabor a mar y acompañado de calamares tiernos
+                        y un alioli casero.
+                    </p>
+                </div>
+
+                <!-- Tapas -->
+                <div class="fade-in">
+                    <div class="img-hover rounded mb-6">
+                        <img src="./materials/DQUZsz6DEmV.jpg" alt="Tapas Variadas" class="w-full h-72 object-cover rounded">
+                    </div>
+                    <h3 class="text-2xl mb-3" style="color: #342C28; font-weight: 200;">Tapas Españolas</h3>
+                    <div class="w-12 h-px bg-gradient-to-r from-transparent via-[#C4764E] to-transparent mb-4"></div>
+                    <p style="color: #5A4D47;">
+                        Selección de tapas tradicionales: jamón ibérico, quesos españoles, croquetas caseras,
+                        boquerones y mucho más.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center fade-in">
+                <p class="text-base mb-8 italic" style="color: #5A4D47;">
+                    Amplia carta de vinos españoles: Rioja, Ribera del Duero, Albariño y más
+                </p>
+                <a href="tel:+17879935607" class="btn-primary">Llamar para Menú Completo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="galeria" class="py-32 relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 fade-in">
+                <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                    Galería
+                </h2>
+                <div class="flex justify-center mb-6">
+                    <div class="accent-line"></div>
+                </div>
+                <p class="text-lg max-w-3xl mx-auto" style="color: #5A4D47;">
+                    Los sabores y colores de la auténtica cocina española
+                </p>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQ6tw1Zkx6j.jpg" alt="Platos variados" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQO6jNRDqt1.jpg" alt="Pescado a la parrilla" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQ9IXS6lBV0.jpg" alt="Ensalada de pescado" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQjkH3GlYau.jpg" alt="Pollo asado" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQg9SzOFXPn.jpg" alt="Cordero" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQt9BaZl92R.jpg" alt="Langosta" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQwQ77CDbeq.jpg" alt="Guiso" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DRCTsehkXDM.jpg" alt="Hojaldre" class="w-full h-80 object-cover rounded">
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQR1Hk3k-H0.jpg" alt="Clientes felices" class="w-full h-80 object-cover rounded">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Private Gatherings Section -->
+    <section class="py-32 bg-white relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-in">
+                    <h2 class="text-4xl md:text-5xl mb-6" style="color: #342C28; font-weight: 200; letter-spacing: 3px;">
+                        Eventos Privados
+                    </h2>
+                    <div class="accent-line mb-8"></div>
+                    <p class="text-lg leading-relaxed mb-6" style="color: #5A4D47;">
+                        Chotis en Ávila es el lugar perfecto para celebrar momentos especiales con la familia y amigos.
+                        Ya sea una reunión íntima, una celebración familiar o un evento corporativo, creamos experiencias
+                        gastronómicas memorables.
+                    </p>
+                    <p class="text-lg leading-relaxed mb-8" style="color: #5A4D47;">
+                        Nuestro equipo de 40 personas está listo para atender tu evento con la misma dedicación y exigencia
+                        que caracteriza cada plato que servimos. Ofrecemos menús personalizados y un ambiente que transporta
+                        a tus invitados directamente a una <span style="color: #C4764E;">taberna española</span>.
+                    </p>
+
+                    <div class="space-y-4 mb-10">
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 mr-4 mt-1 flex-shrink-0" style="color: #C4764E;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span style="color: #5A4D47;">Espacio acogedor con ambiente español auténtico</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 mr-4 mt-1 flex-shrink-0" style="color: #C4764E;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span style="color: #5A4D47;">Menús personalizados con especialidades españolas</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 mr-4 mt-1 flex-shrink-0" style="color: #C4764E;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span style="color: #5A4D47;">Selección de vinos españoles premium</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 mr-4 mt-1 flex-shrink-0" style="color: #C4764E;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span style="color: #5A4D47;">Servicio profesional y atento</span>
+                        </div>
+                    </div>
+
+                    <a href="tel:+17879935607" class="btn-primary">Consultar Disponibilidad</a>
+                </div>
+                <div class="fade-in img-hover rounded">
+                    <img src="./materials/DQUZt46AD6r.jpg" alt="Tapas para eventos" class="w-full h-auto rounded shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservations Section -->
+    <section id="reservas" class="py-32 relative z-10" style="background: linear-gradient(135deg, #342C28 0%, #5A4D47 100%);">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl mb-6 text-white" style="font-weight: 200; letter-spacing: 3px;">
+                    Reservaciones
+                </h2>
+                <div class="flex justify-center mb-6">
+                    <div class="accent-line" style="background: linear-gradient(90deg, transparent, #C4764E, transparent);"></div>
+                </div>
+                <p class="text-lg max-w-2xl mx-auto text-white" style="opacity: 0.9;">
+                    Llámanos para reservar tu mesa y disfrutar de la auténtica experiencia española
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 mb-12 fade-in">
+                <div>
+                    <h3 class="text-2xl mb-6 text-white" style="font-weight: 200;">Contacto</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-sm uppercase tracking-wider mb-2" style="color: #C4764E; font-weight: 200;">Teléfono</p>
+                            <a href="tel:+17879935607" class="text-white hover:text-[#C4764E] transition-colors text-2xl" style="font-weight: 200;">
+                                787-993-5607
+                            </a>
+                        </div>
+                        <div>
+                            <p class="text-sm uppercase tracking-wider mb-2" style="color: #C4764E; font-weight: 200;">Email</p>
+                            <a href="mailto:chotisenavila@yahoo.com" class="text-white hover:text-[#C4764E] transition-colors" style="font-weight: 200;">
+                                chotisenavila@yahoo.com
+                            </a>
+                        </div>
+                        <div>
+                            <p class="text-sm uppercase tracking-wider mb-2" style="color: #C4764E; font-weight: 200;">Ubicación</p>
+                            <p class="text-white" style="opacity: 0.9; font-weight: 200;">
+                                Hato Rey<br>
+                                San Juan, Puerto Rico
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl mb-6 text-white" style="font-weight: 200;">Horario</h3>
+                    <div class="space-y-4 text-white" style="opacity: 0.9; font-weight: 200;">
+                        <div class="flex justify-between pb-3" style="border-bottom: 1px solid rgba(196, 118, 78, 0.3);">
+                            <span>Lunes - Viernes</span>
+                            <span>11:30 AM - 10:00 PM</span>
+                        </div>
+                        <div class="flex justify-between pb-3" style="border-bottom: 1px solid rgba(196, 118, 78, 0.3);">
+                            <span>Sábados</span>
+                            <span>12:00 PM - 10:00 PM</span>
+                        </div>
+                        <div class="flex justify-between pb-3" style="border-bottom: 1px solid rgba(196, 118, 78, 0.3);">
+                            <span>Domingos</span>
+                            <span>12:00 PM - 9:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center fade-in">
+                <div class="bg-white/5 backdrop-blur-sm p-10 rounded mb-10">
+                    <p class="text-white mb-6" style="font-weight: 200; opacity: 0.9;">
+                        Punto de encuentro de la comunidad española en Puerto Rico. Te esperamos con los brazos abiertos
+                        para compartir los sabores de España en el corazón del Caribe.
+                    </p>
+                    <p class="text-sm uppercase tracking-wider" style="color: #C4764E; font-weight: 200;">
+                        Primera Certificación "Restaurants From Spain" en Puerto Rico
+                    </p>
+                </div>
+                <a href="tel:+17879935607" class="btn-primary" style="background: #C4764E; border-color: #C4764E; color: white;">
+                    Llamar para Reservar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <h3 class="text-2xl mb-4" style="color: #342C28; font-weight: 200; letter-spacing: 2px;">CHOTIS EN ÁVILA</h3>
+                    <p class="text-sm mb-4" style="color: #5A4D47; font-weight: 200;">
+                        Auténtica cocina española en San Juan, Puerto Rico. Un puente gastronómico entre Castilla y el Caribe.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg mb-4" style="color: #C4764E; font-weight: 200; letter-spacing: 2px;">Enlaces</h4>
+                    <ul class="space-y-2" style="font-weight: 200;">
+                        <li><a href="#historia" class="hover:text-[#C4764E] transition-colors" style="color: #5A4D47;">Historia</a></li>
+                        <li><a href="#chef" class="hover:text-[#C4764E] transition-colors" style="color: #5A4D47;">Chef Mario</a></li>
+                        <li><a href="#menu" class="hover:text-[#C4764E] transition-colors" style="color: #5A4D47;">Menú</a></li>
+                        <li><a href="#galeria" class="hover:text-[#C4764E] transition-colors" style="color: #5A4D47;">Galería</a></li>
+                        <li><a href="#reservas" class="hover:text-[#C4764E] transition-colors" style="color: #5A4D47;">Reservaciones</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg mb-4" style="color: #C4764E; font-weight: 200; letter-spacing: 2px;">Síguenos</h4>
+                    <a href="https://www.facebook.com/profile.php?id=100051284304491" target="_blank" rel="noopener noreferrer" class="inline-block hover:opacity-70 transition-opacity mb-4">
+                        <svg class="w-6 h-6" style="color: #342C28;" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <p class="text-sm" style="color: #5A4D47; font-weight: 200;">
+                        787-993-5607<br>
+                        chotisenavila@yahoo.com
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center pt-8" style="border-top: 1px solid rgba(196, 118, 78, 0.2);">
+                <p class="text-sm" style="color: #5A4D47; font-weight: 200;">
+                    © 2025 Chotis en Ávila. Todos los derechos reservados. | Primera Certificación "Restaurants From Spain" en Puerto Rico
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Fade-in animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -80px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Particle animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.3 + 0.1;
+                this.color = Math.random() > 0.5 ? 'rgba(196, 118, 78, 0.3)' : 'rgba(52, 107, 135, 0.2)';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+                this.x += Math.sin(Date.now() * 0.0005 + this.y * 0.01) * 0.2;
+                this.y += Math.cos(Date.now() * 0.0005 + this.x * 0.01) * 0.2;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+
 </body>
 </html>
